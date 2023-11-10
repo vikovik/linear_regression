@@ -81,30 +81,33 @@ def calculate_all_error(m, b, points):
     for the given data points
     :param datapoints: The `datapoints` parameter is a list of tuples, where each tuple represents a
     data point. Each tuple contains two values: the x-coordinate and the y-coordinate of the data point
+    :param custom_ms: A list of custom values for the slope (m) of the linear equation
+    :param custom_bs: A list of custom values for the y-intercept (b) of the linear equation
+    :return: a tuple containing the slope and y-intercept that minimize the error for the given set of data points
 """
-def find_smallest_error(possible_ms, possible_bs, datapoints):
-    if not isinstance(possible_ms, list) or not isinstance(possible_bs, list) or not isinstance(datapoints, list):
+
+def find_smallest_error(possible_ms, possible_bs, datapoints, custom_ms=None, custom_bs=None):
+    if not all(isinstance(param, list) for param in [possible_ms, possible_bs, datapoints, custom_ms, custom_bs]) and custom_ms is not None and custom_bs is not None:
         raise ValueError("All parameters should be lists")
     
+    custom_ms = custom_ms or possible_ms
+    custom_bs = custom_bs or possible_bs
+
+    valid_custom_ms = all(isinstance(m, (int, float)) for m in custom_ms)
+    valid_custom_bs = all(isinstance(b, (int, float)) for b in custom_bs)
+
+    if not (valid_custom_ms and valid_custom_bs):
+        raise ValueError("Custom slope and intercept values should be numbers")
+
     smallest_error = float("inf")
-    best_m = 0
-    best_b = 0
+    best_m, best_b = 0, 0
 
-    for m in possible_ms:
-
-        if not isinstance(m, (int, float)):
-            raise ValueError("Possible slope values m should be a number")
-        
-        for b in possible_bs:
-
-            if not isinstance(b, (int, float)):
-                raise ValueError("Possible intercept values b should be a number")
-
+    for m in custom_ms:
+        for b in custom_bs:
             error = calculate_all_error(m, b, datapoints)
 
             if error < smallest_error:
-                best_m = m
-                best_b = b
-                smallest_error = error
-    
+                best_m, best_b, smallest_error = m, b, error
+
     return best_m, best_b, smallest_error
+

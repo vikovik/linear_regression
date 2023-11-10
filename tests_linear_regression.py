@@ -37,17 +37,24 @@ class TestLinearRegressionFunctions(unittest.TestCase):
         possible_ms = [1, 2]
         possible_bs = [0, 1]
         datapoints = [(1, 2), (2, 0), (3, 4)]
-        best_m, best_b, smallest_error = find_smallest_error(possible_ms, possible_bs, datapoints)
+        custom_ms = [1, 2]
+        custom_bs = [1, 2]
+        best_m, best_b, smallest_error = find_smallest_error(possible_ms, possible_bs, datapoints, custom_ms, custom_bs)
 
         self.assertEqual(best_m, 1) # m=1, should return best_m = 1
         self.assertEqual(best_b, 1) # b=1, should return best_b = 1
         self.assertEqual(smallest_error, 3) # m=1, b=1, should return smallest_error = 3
+
         with self.assertRaises(ValueError):
             find_smallest_error([0.0, "1.0", 2.0], possible_bs, datapoints) # Invalid slope format
         with self.assertRaises(ValueError):
             find_smallest_error(possible_ms, [0.0, "1.0", 2.0], datapoints) # Invalid y-intercept format
         with self.assertRaises(ValueError):
             find_smallest_error(possible_ms, possible_bs, [(1, 1), (2, 2), (3, 3), 4, 4])  # Invalid point format
+        with self.assertRaises(ValueError):
+            find_smallest_error(possible_ms, possible_bs, datapoints, [0.0, "1.0", 2.0], custom_bs) # Invalid custom slope format
+        with self.assertRaises(ValueError):
+            find_smallest_error(possible_ms, possible_bs, datapoints, custom_ms, [0.0, "1.0", 2.0]) # Invalid custom y-intercept format
 
 if __name__ == '__main__':
     unittest.main()
